@@ -29,6 +29,8 @@ typedef struct statement_list_s statement_list_t;
 
 typedef struct param_list_s param_list_t;
 typedef struct function_s function_t;
+typedef struct mstring_s mstring_t;
+
 union expression_uni {
     primary_expression_t *p;
     binary_expression_t *b;
@@ -161,45 +163,39 @@ struct function_s
     int is_native;
     void *func_addr;
     statement_list_t *list;
-    param_list_s *paramlist;
+    param_list_t *paramlist;
     function_t *next;
 };
+struct mstring_s
+{
+    char *str;
+    int is_src;
+    int ref_count;
+};
 
-Statement *create_Statement(enum StatementType type);
-Statement_list *createStatementList(Statement *statement);
-Statement *create_ExpressionStatement(Expression *expression);
-Statement *create_IFStatement(Expression *condition, Statement_list *list);
-Statement *create_FORStatement(Expression *before, Expression *condition,
-                               Expression *after, Statement_list *list);
-Statement_list *StatementList_add(Statement_list *list, Statement *statement);
+statement_t *create_statement(enum statement_type_e type);
+statement_list_t *create_statement_list(statement_t *statement);
+statement_t *create_expression_statement(expression_t *expression);
+statement_t *create_if_statement(expression_t *condition, statement_list_t *list);
+statement_t *create_for_statement(expression_t *before, expression_t *condition,
+                               expression_t *after, statement_list_t *list);
+statement_list_t *statement_list_add(statement_list_t *list, statement_t *statement);
 
-Expression *create_IntergerExpression(int i);
-Expression *create_DoubleExpression(double i);
-Expression *create_StrExpression(char *p);
-Expression *create_IDExpression(char *p);
-Binary_Expression *createBinaryExpression(enum ExpressionAction action, Expression *left, Expression *right);
-Assign_Expression *createAssignExpression(char *c, Expression *expression);
-Expression *binExpressionWarpper(Binary_Expression *expression);
-Expression *AssignExpressionWarpper(Assign_Expression *expression);
-Expression *create_FuncCallExpression(char *identifier, ParamList *params);
+expression_t *create_int_expression(int i);
+expression_t *create_double_expression(double i);
+expression_t *create_str_expression(char *p);
+expression_t *create_id_expression(char *p);
+binary_expression_t*create_binary_expression(enum expression_action_e action, expression_t *left, expression_t *right);
+assign_expression_t *create_assign_expression(char *c, expression_t *expression);
+expression_t *binary_expression_warpper(binary_expression_t*expression);
+expression_t *assign_expression_warpper(assign_expression_t *expression);
+expression_t *create_func_call_expression(char *identifier, param_list_t *params);
 
-ParamList *createParamList(char *identifier);
-ParamList *ParamList_add(ParamList *list, ParamList *param);
-Function_t *Functon_define(char *identifier, ParamList *params, Statement_list *list);
-Function_t *Function_add(Function_t *functionlist, Function_t *func);
-Function_t *Function_find(Function_t *funclist, char *identifier);
-
-void open_charbuffer();
-void addc_charbuffer(char c);
-char *flush_charbuffer();
-char *Interpreter_str_malloc(char *str);
-void Interpreter_setlist(Statement_list *list);
-Statement_list *Interpreter_getlist();
-
-void Interpreter_setFunclist(Function_t *func);
-Function_t *Interpreter_getFunclist();
-
-void Interpreter_printRoot();
+param_list_t *create_param_list(char *identifier);
+param_list_t *param_list_add(param_list_t *list, param_list_t *param);
+function_t *functon_define(char *identifier, param_list_t *params, statement_list_t *list);
+function_t *function_add(function_t *functionlist, function_t *func);
+function_t *function_find(function_t *funclist, char *identifier);
 
 #endif /* EXPRESSION_H */
 
